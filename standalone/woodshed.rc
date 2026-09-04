@@ -1,0 +1,12 @@
+// The application's icon, in the two places Windows looks for one.
+//
+// "1" is what Explorer, the file properties and the installer read off the executable: the shell
+// takes the icon group with the lowest ordinal. "GLFW_ICON" is the name GLFW looks up by when it
+// registers the window class, and is what puts the icon in the title bar, on the taskbar button
+// and in the Alt-Tab list. Same file for both, so there is one icon and not two that drift.
+//
+// The file is generated from the mark's geometry rather than drawn by hand; see
+// design/make-icon.ps1. It carries 16 through 256 pixels, the small sizes using the single-ring
+// form of the mark, because three rings at sixteen pixels is three grey lines.
+1 ICON "woodshed.ico"
+GLFW_ICON ICON "woodshed.ico"

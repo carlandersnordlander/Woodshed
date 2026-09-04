@@ -1,0 +1,13 @@
+# Line endings are LF in the repository and LF in the working copy, on every platform.
+#
+# Without this, Git on Windows converts on checkout and the next commit from that machine turns
+# every file in the repository over to CRLF - which shows up as a diff touching everything and
+# tells you nothing. The sources here are LF today; this keeps them that way.
+* text=auto eol=lf
+
+# Data, not source. A capture is JSON and a WAV is not, but neither is ever read or merged by a
+# person, and converting their line endings only makes them a different size on every platform.
+*.nam -text
+*.wav -text
+*.ico -text
+*.png -text

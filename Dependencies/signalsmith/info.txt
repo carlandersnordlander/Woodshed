@@ -1,0 +1,9 @@
+signalsmith-stretch.h comes from https://github.com/Signalsmith-Audio/signalsmith-stretch
+signalsmith-linear/ comes from https://github.com/Signalsmith-Audio/linear
+
+Both MIT. The stretcher includes "signalsmith-linear/stft.h", which is why the second repo sits in
+a subfolder of that exact name rather than beside it.
+
+Only the headers the stretcher reaches are here: the four top-level ones plus platform/. The tests
+are not copied. Vendored rather than fetched at configure time because neither repo has tagged
+releases, so there is no URL with a hash that stays valid - the same reason dr_libs is vendored.

@@ -1,0 +1,8 @@
+dr_wav.h, dr_mp3.h and dr_flac.h come from https://github.com/mackron/dr_libs
+
+Single-header decoders, public domain or MIT-0 at your choice (the licence is at the foot of each
+header). Vendored rather than fetched at configure time because dr_libs has no tagged releases, so
+there is no URL with a hash that stays valid.
+
+They are compiled once in standalone/AudioFile.cpp, which is the only place that defines the
+DR_..._IMPLEMENTATION macros.

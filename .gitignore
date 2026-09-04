@@ -1,0 +1,64 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+.vscode/
+
+docs/_build/
+*.DS_Store
+
+example_audio/output.wav
+
+# CMake build trees. FetchContent unpacks GLFW, Dear ImGui, RtAudio, Eigen and AudioDSPTools
+# inside these, so they run to hundreds of megabytes and must never be committed.
+build/
+build_*/
+out/
+cmake-build-*/
+
+# Visual Studio / VS Code local state
+.vs/
+*.user
+CMakeUserPresets.json
+CMakeSettings.json
+
+# Dear ImGui writes its window layout here on exit; it is per-machine state, not source.
+imgui.ini
+
+# Captures. example_models/ is upstream's own test set and belongs here; anything else with this
+# extension is somebody's work, downloaded from TONE3000 under their terms, and committing it would
+# republish it. A guard rather than a rule to remember: point the app at a folder outside the tree.
+*.nam
+!example_models/*.nam
+
+# What TONE3000 writes beside a downloaded capture, and the raw audio a capture was made from.
+_tone3000.json

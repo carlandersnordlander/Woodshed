@@ -1,0 +1,33 @@
+name: standalone
+
+# Proves the thing this repository promises: that a plain clone builds. Deliberately checks out
+# without submodules, so the run takes the same path a new contributor does and the CMake
+# fallbacks that fetch Eigen and AudioDSPTools stay covered.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -B build -S .
+
+      - name: Build
+        run: cmake --build build --config Release --target nam_standalone
+
+      - name: Build the ASIO diagnostic
+        run: cmake --build build --config Release --target asio_probe
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nam_standalone
+          path: build/standalone/Release/nam_standalone.exe
+          if-no-files-found: error

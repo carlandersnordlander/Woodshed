@@ -1,0 +1,261 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="1180" viewBox="0 0 1480 1180" font-family="Segoe UI, Inter, system-ui, sans-serif">
+  <title>Anders Amp - UI kit</title>
+  <desc>Palette, type, metrics and components, at the sizes the app actually draws them.
+Generated to match standalone/ui/Theme.cpp - if the two disagree, the code is right.</desc>
+
+  <defs>
+    <linearGradient id="meterFill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6CC684"/>
+      <stop offset="62%" stop-color="#F0A03E"/>
+      <stop offset="100%" stop-color="#E86A6A"/>
+    </linearGradient>
+    <clipPath id="meterClip"><rect x="0" y="0" width="150" height="10" rx="5"/></clipPath>
+  </defs>
+
+  <rect width="1480" height="1180" fill="#0A0B0D"/>
+
+  <!-- ============================== header ============================== -->
+  <g id="title">
+    <text x="48" y="62" fill="#E6E8EC" font-size="30" font-weight="600">Anders Amp — UI kit</text>
+    <text x="48" y="88" fill="#868C97" font-size="14">Every value here is what Theme.cpp sets. Base unit 15 px, Segoe UI / Segoe UI Semibold.</text>
+    <line x1="48" y1="108" x2="1432" y2="108" stroke="#262A32" stroke-width="1"/>
+  </g>
+
+  <!-- ============================== palette ============================== -->
+  <g id="palette" transform="translate(48, 146)">
+    <text x="0" y="0" fill="#5A606B" font-size="12" font-weight="600" letter-spacing="1.2">SURFACES — a ladder, not a set. Up means nearer the front.</text>
+
+    <g transform="translate(0, 20)">
+      <rect x="0"   y="0" width="150" height="76" rx="8" fill="#07080A" stroke="#262A32"/>
+      <rect x="166" y="0" width="150" height="76" rx="8" fill="#0A0B0D" stroke="#262A32"/>
+      <rect x="332" y="0" width="150" height="76" rx="8" fill="#131519"/>
+      <rect x="498" y="0" width="150" height="76" rx="8" fill="#1F232A"/>
+      <rect x="664" y="0" width="150" height="76" rx="8" fill="#2B3039"/>
+      <rect x="830" y="0" width="150" height="76" rx="8" fill="#262A32"/>
+
+      <g font-size="12" fill="#E6E8EC">
+        <text x="10"  y="96">Sunken</text>   <text x="10"  y="112" fill="#5A606B">#07080A</text>
+        <text x="176" y="96">Base</text>     <text x="176" y="112" fill="#5A606B">#0A0B0D</text>
+        <text x="342" y="96">Surface</text>  <text x="342" y="112" fill="#5A606B">#131519</text>
+        <text x="508" y="96">Raised</text>   <text x="508" y="112" fill="#5A606B">#1F232A</text>
+        <text x="674" y="96">Hover</text>    <text x="674" y="112" fill="#5A606B">#2B3039</text>
+        <text x="840" y="96">Line</text>     <text x="840" y="112" fill="#5A606B">#262A32</text>
+      </g>
+      <g font-size="11" fill="#5A606B">
+        <text x="10"  y="128">fields, wells, tracks</text>
+        <text x="176" y="128">the app behind everything</text>
+        <text x="342" y="128">a panel on the base</text>
+        <text x="508" y="128">buttons, popups</text>
+        <text x="674" y="128">under the pointer</text>
+        <text x="840" y="128">hairlines only</text>
+      </g>
+    </g>
+  </g>
+
+  <g id="accents" transform="translate(48, 320)">
+    <text x="0" y="0" fill="#5A606B" font-size="12" font-weight="600" letter-spacing="1.2">ACCENT AND STATE — amber means active or a value. Nothing else may use it.</text>
+    <g transform="translate(0, 20)">
+      <rect x="0"   y="0" width="150" height="52" rx="8" fill="#F0A03E"/>
+      <rect x="166" y="0" width="150" height="52" rx="8" fill="#0A0B0D"/>
+      <rect x="166" y="0" width="150" height="52" rx="8" fill="#F0A03E" opacity="0.22"/>
+      <rect x="332" y="0" width="150" height="52" rx="8" fill="#6CC684"/>
+      <rect x="498" y="0" width="150" height="52" rx="8" fill="#E8AE58"/>
+      <rect x="664" y="0" width="150" height="52" rx="8" fill="#E86A6A"/>
+      <g font-size="12" fill="#E6E8EC">
+        <text x="10"  y="72">Accent</text>     <text x="10"  y="88" fill="#5A606B">#F0A03E</text>
+        <text x="176" y="72">Accent 22%</text> <text x="176" y="88" fill="#5A606B">fills, selected pill</text>
+        <text x="342" y="72">Success</text>    <text x="342" y="88" fill="#5A606B">#6CC684</text>
+        <text x="508" y="72">Warning</text>    <text x="508" y="88" fill="#5A606B">#E8AE58</text>
+        <text x="674" y="72">Danger</text>     <text x="674" y="88" fill="#5A606B">#E86A6A</text>
+      </g>
+    </g>
+  </g>
+
+  <g id="text-colours" transform="translate(880, 320)">
+    <text x="0" y="0" fill="#5A606B" font-size="12" font-weight="600" letter-spacing="1.2">TEXT</text>
+    <text x="0" y="34" fill="#E6E8EC" font-size="17">Text — #E6E8EC</text>
+    <text x="0" y="60" fill="#868C97" font-size="17">TextDim — #868C97</text>
+    <text x="0" y="86" fill="#5A606B" font-size="17">TextFaint — #5A606B</text>
+    <text x="0" y="112" fill="#ECECF0" font-size="17">Control — #ECECF0 (pointers, glyphs)</text>
+  </g>
+
+  <line x1="48" y1="470" x2="1432" y2="470" stroke="#262A32"/>
+
+  <!-- ============================== type ============================== -->
+  <g id="type" transform="translate(48, 508)">
+    <text x="0" y="0" fill="#5A606B" font-size="12" font-weight="600" letter-spacing="1.2">TYPE — one family, three weights of emphasis. Scales are multiples of the 15 px base.</text>
+    <text x="0" y="38" fill="#E6E8EC" font-size="22.5" font-weight="600">Display 1.5× — 22.5 px semibold</text>
+    <text x="0" y="70" fill="#E6E8EC" font-size="18" font-weight="600">Heading 1.2× — 18 px semibold</text>
+    <text x="0" y="98" fill="#E6E8EC" font-size="17.25" font-weight="600">Value 1.15× — 17.25 px semibold</text>
+    <text x="0" y="124" fill="#E6E8EC" font-size="15">Body 1× — 15 px regular</text>
+    <text x="0" y="148" fill="#868C97" font-size="15">Label 1× dim — the name of the control beside it</text>
+    <text x="0" y="172" fill="#5A606B" font-size="12.3" font-weight="600" letter-spacing="1.2">SECTION 0.82× FAINT — SPACE ABOVE, NONE BELOW</text>
+  </g>
+
+  <g id="metrics" transform="translate(560, 508)">
+    <text x="0" y="0" fill="#5A606B" font-size="12" font-weight="600" letter-spacing="1.2">METRICS</text>
+    <g font-size="13" fill="#868C97">
+      <text x="0" y="30">FramePadding</text>   <text x="150" y="30" fill="#E6E8EC">9 × 5</text>
+      <text x="0" y="52">ItemSpacing</text>    <text x="150" y="52" fill="#E6E8EC">8 × 7</text>
+      <text x="0" y="74">WindowPadding</text>  <text x="150" y="74" fill="#E6E8EC">14 × 12</text>
+      <text x="0" y="96">CellPadding</text>    <text x="150" y="96" fill="#E6E8EC">8 × 4</text>
+      <text x="0" y="118">Frame height</text>  <text x="150" y="118" fill="#E6E8EC">25 px</text>
+      <text x="0" y="140">Scrollbar</text>     <text x="150" y="140" fill="#E6E8EC">11 px</text>
+    </g>
+  </g>
+
+  <g id="radii" transform="translate(830, 508)">
+    <text x="0" y="0" fill="#5A606B" font-size="12" font-weight="600" letter-spacing="1.2">RADII — surfaces 8, controls 5. Nothing else.</text>
+    <rect x="0"   y="22" width="88" height="60" rx="8" fill="#131519"/>
+    <rect x="104" y="22" width="88" height="60" rx="5" fill="#1F232A"/>
+    <rect x="208" y="22" width="88" height="60" rx="5" fill="#07080A"/>
+    <g font-size="11" fill="#5A606B">
+      <text x="0"   y="98">panel / popup 8</text>
+      <text x="104" y="98">button 5</text>
+      <text x="208" y="98">field 5</text>
+    </g>
+    <text x="0" y="130" fill="#868C97" font-size="12">No borders on panels. Depth separates them, not outlines.</text>
+  </g>
+
+  <line x1="48" y1="720" x2="1432" y2="720" stroke="#262A32"/>
+
+  <!-- ============================== components ============================== -->
+  <g id="components" transform="translate(48, 758)">
+    <text x="0" y="0" fill="#5A606B" font-size="12" font-weight="600" letter-spacing="1.2">COMPONENTS — drawn at the sizes the app uses</text>
+
+    <!-- button states -->
+    <g transform="translate(0, 24)">
+      <text x="0" y="0" fill="#868C97" font-size="12">Button — rest / hover / active / disabled</text>
+      <rect x="0"   y="12" width="96" height="25" rx="5" fill="#1F232A"/>
+      <rect x="106" y="12" width="96" height="25" rx="5" fill="#2B3039"/>
+      <rect x="212" y="12" width="96" height="25" rx="5" fill="#363C48"/>
+      <rect x="318" y="12" width="96" height="25" rx="5" fill="#1F232A" opacity="0.38"/>
+      <g font-size="13" fill="#E6E8EC" text-anchor="middle">
+        <text x="48"  y="29">Button</text>
+        <text x="154" y="29">Button</text>
+        <text x="260" y="29">Button</text>
+        <text x="366" y="29" opacity="0.38">Button</text>
+      </g>
+    </g>
+
+    <!-- field -->
+    <g transform="translate(0, 92)">
+      <text x="0" y="0" fill="#868C97" font-size="12">Field — sunken, so it never looks like a button</text>
+      <rect x="0" y="12" width="202" height="25" rx="5" fill="#07080A"/>
+      <text x="9" y="29" font-size="13" fill="#E6E8EC">48000</text>
+      <rect x="212" y="12" width="202" height="25" rx="5" fill="#07080A"/>
+      <text x="221" y="29" font-size="13" fill="#5A606B">Project name</text>
+    </g>
+
+    <!-- segmented -->
+    <g transform="translate(0, 160)">
+      <text x="0" y="0" fill="#868C97" font-size="12">SegmentedButton — off / on</text>
+      <rect x="0" y="12" width="80" height="25" rx="5" fill="#1F232A"/>
+      <text x="40" y="29" font-size="13" fill="#868C97" text-anchor="middle">CLICK</text>
+      <rect x="90" y="12" width="80" height="25" rx="5" fill="#F0A03E" opacity="0.22"/>
+      <rect x="90" y="12" width="80" height="25" rx="5" fill="none" stroke="#F0A03E"/>
+      <text x="130" y="29" font-size="13" fill="#F0A03E" text-anchor="middle">CLICK</text>
+    </g>
+
+    <!-- chip -->
+    <g transform="translate(0, 228)">
+      <text x="0" y="0" fill="#868C97" font-size="12">Chip</text>
+      <rect x="0"  y="12" width="52" height="20" rx="10" fill="#F0A03E" opacity="0.22"/>
+      <text x="26" y="26" font-size="11" fill="#F0A03E" text-anchor="middle">NAM</text>
+      <rect x="60" y="12" width="40" height="20" rx="10" fill="#6CC684" opacity="0.22"/>
+      <text x="80" y="26" font-size="11" fill="#6CC684" text-anchor="middle">IR</text>
+      <rect x="108" y="12" width="56" height="20" rx="10" fill="#868C97" opacity="0.18"/>
+      <text x="136" y="26" font-size="11" fill="#868C97" text-anchor="middle">clean</text>
+    </g>
+
+    <!-- meter -->
+    <g transform="translate(0, 296)">
+      <text x="0" y="0" fill="#868C97" font-size="12">LevelMeter — floor −60 dB, target band −18 to −6</text>
+      <rect x="0" y="12" width="150" height="10" rx="5" fill="#07080A"/>
+      <g clip-path="url(#meterClip)" transform="translate(0,12)">
+        <rect x="0" y="0" width="108" height="10" fill="url(#meterFill)"/>
+      </g>
+      <rect x="105" y="10" width="30" height="14" fill="#6CC684" opacity="0.10"/>
+    </g>
+
+    <!-- knob -->
+    <g transform="translate(470, 24)">
+      <text x="0" y="0" fill="#868C97" font-size="12">Knob — 62 px, arc fills from the centre when the range straddles zero</text>
+      <circle cx="40" cy="52" r="26" fill="#07080A"/>
+      <path d="M 40 52 m -22 14 a 26 26 0 1 1 44 0" fill="none" stroke="#262A32" stroke-width="4" stroke-linecap="round"/>
+      <path d="M 40 26 a 26 26 0 0 1 22 40" fill="none" stroke="#F0A03E" stroke-width="4" stroke-linecap="round"/>
+      <line x1="40" y1="52" x2="56" y2="34" stroke="#ECECF0" stroke-width="2.4" stroke-linecap="round"/>
+      <text x="40" y="98" font-size="12" fill="#868C97" text-anchor="middle">DRIVE</text>
+      <text x="40" y="114" font-size="13" fill="#E6E8EC" text-anchor="middle" font-weight="600">+4.5</text>
+    </g>
+
+    <!-- power -->
+    <g transform="translate(600, 24)">
+      <text x="0" y="0" fill="#868C97" font-size="12">PowerButton — on / off</text>
+      <circle cx="16" cy="36" r="13" fill="none" stroke="#F0A03E" stroke-width="2.2" stroke-dasharray="52 20" transform="rotate(-115 16 36)"/>
+      <line x1="16" y1="24" x2="16" y2="36" stroke="#F0A03E" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="62" cy="36" r="13" fill="none" stroke="#5A606B" stroke-width="2.2" stroke-dasharray="52 20" transform="rotate(-115 62 36)"/>
+      <line x1="62" y1="24" x2="62" y2="36" stroke="#5A606B" stroke-width="2.2" stroke-linecap="round"/>
+    </g>
+
+    <!-- nav -->
+    <g transform="translate(730, 24)">
+      <text x="0" y="0" fill="#868C97" font-size="12">Nav icon — selected sits in a lit pill</text>
+      <rect x="0" y="12" width="56" height="56" rx="15" fill="#F0A03E" opacity="0.22"/>
+      <g stroke="#F0A03E" stroke-width="2.4" fill="none">
+        <rect x="14" y="24" width="28" height="13" rx="2"/>
+        <rect x="16" y="41" width="24" height="17" rx="2"/>
+        <circle cx="28" cy="49" r="4"/>
+      </g>
+      <g stroke="#868C97" stroke-width="2.4" fill="none" transform="translate(70,0)">
+        <rect x="14" y="24" width="28" height="13" rx="2"/>
+        <rect x="16" y="41" width="24" height="17" rx="2"/>
+        <circle cx="28" cy="49" r="4"/>
+      </g>
+    </g>
+
+    <!-- panel -->
+    <g transform="translate(470, 150)">
+      <text x="0" y="0" fill="#868C97" font-size="12">Panel — a surface on the base, no outline</text>
+      <rect x="0" y="12" width="330" height="150" rx="8" fill="#131519"/>
+      <text x="14" y="38" font-size="12.3" font-weight="600" fill="#5A606B" letter-spacing="1.2">STEM SEPARATION</text>
+      <text x="14" y="62" font-size="13" fill="#868C97">Model</text>
+      <rect x="90" y="48" width="150" height="25" rx="5" fill="#07080A"/>
+      <text x="99" y="65" font-size="13" fill="#E6E8EC">htdemucs</text>
+      <text x="14" y="94" font-size="13" fill="#868C97">Device</text>
+      <rect x="90" y="80" width="150" height="25" rx="5" fill="#07080A"/>
+      <text x="99" y="97" font-size="13" fill="#E6E8EC">GPU (CUDA)</text>
+      <rect x="14" y="122" width="110" height="25" rx="5" fill="#1F232A"/>
+      <text x="69" y="139" font-size="13" fill="#E6E8EC" text-anchor="middle">Start</text>
+      <rect x="132" y="122" width="90" height="25" rx="5" fill="#1F232A"/>
+      <text x="177" y="139" font-size="13" fill="#E6E8EC" text-anchor="middle">Cancel</text>
+    </g>
+
+    <!-- note + chord lane -->
+    <g transform="translate(830, 150)">
+      <text x="0" y="0" fill="#868C97" font-size="12">Note lane and chord ribbon — hue by pitch class</text>
+      <rect x="0" y="12" width="330" height="26" rx="0" fill="#131519"/>
+      <rect x="0"   y="13" width="106" height="24" rx="3" fill="#F0A03E" opacity="0.22"/>
+      <line x1="0" y1="13" x2="0" y2="37" stroke="#F0A03E" stroke-width="1.5"/>
+      <text x="6" y="30" font-size="13" fill="#E6E8EC">Em</text>
+      <rect x="110" y="13" width="106" height="24" rx="3" fill="#F0A03E" opacity="0.22"/>
+      <line x1="110" y1="13" x2="110" y2="37" stroke="#F0A03E" stroke-width="1.5"/>
+      <text x="116" y="30" font-size="13" fill="#E6E8EC">Cmaj7</text>
+      <rect x="220" y="13" width="110" height="24" rx="3" fill="#F0A03E" opacity="0.22"/>
+      <line x1="220" y1="13" x2="220" y2="37" stroke="#F0A03E" stroke-width="1.5"/>
+      <text x="226" y="30" font-size="13" fill="#E6E8EC">D5</text>
+
+      <rect x="0" y="44" width="330" height="46" fill="#131519"/>
+      <rect x="4"   y="66" width="48" height="16" rx="2" fill="#7FB26B" opacity="0.85"/>
+      <text x="8"  y="79" font-size="11" fill="#0A0B0D">E2</text>
+      <rect x="56"  y="54" width="44" height="16" rx="2" fill="#6BA9B2" opacity="0.85"/>
+      <text x="60" y="67" font-size="11" fill="#0A0B0D">B2</text>
+      <rect x="104" y="72" width="60" height="16" rx="2" fill="#9E7FB2" opacity="0.85"/>
+      <text x="108" y="85" font-size="11" fill="#0A0B0D">G3</text>
+      <rect x="168" y="60" width="52" height="16" rx="2" fill="#B27F86" opacity="0.85"/>
+      <text x="172" y="73" font-size="11" fill="#0A0B0D">A3</text>
+    </g>
+  </g>
+
+  <text x="48" y="1150" fill="#5A606B" font-size="11">design/anders-amp-ui-kit.svg — keep in step with standalone/ui/Theme.cpp. The code is the source of truth.</text>
+</svg>

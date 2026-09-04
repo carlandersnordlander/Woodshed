@@ -1,0 +1,221 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" font-family="Segoe UI, Inter, system-ui, sans-serif">
+<!--
+  The Rig view as proposed, drawn at the palette Theme.cpp actually uses today: one black for
+  every background, white controls, the amber spent only where it carries meaning.
+
+  What changed from what is on screen now:
+    - the chain packs from the left in cards you can read, instead of four small squares
+      spread evenly across eighteen hundred pixels of hairline
+    - the rail is as tall as it needs to be. Three lanes are drawn only when something is
+      actually parallel; here nothing is, so it is one lane
+    - the panel has a header - power, name, type behind a caret, remove at the far end -
+      instead of a TYPE column taking the most prominent place on the screen for a decision
+      made once per block
+    - the capture is a field, not a library. The library is the Library view
+-->
+
+<rect width="1440" height="900" fill="#060607"/>
+
+<!-- ============================ nav rail ============================ -->
+<rect x="0" y="0" width="54" height="900" fill="#101012"/>
+<rect x="0" y="16" width="2" height="44" fill="#F0A03E"/>
+
+<!-- play -->
+<path d="M 21 28 L 21 48 L 37 38 Z" fill="#8A8A92"/>
+<!-- rig: a head on a cab, selected -->
+<rect x="16" y="84" width="22" height="14" rx="2" fill="none" stroke="#F4F4F6" stroke-width="1.7"/>
+<circle cx="22" cy="91" r="1.4" fill="#F4F4F6"/><circle cx="27" cy="91" r="1.4" fill="#F4F4F6"/><circle cx="32" cy="91" r="1.4" fill="#F4F4F6"/>
+<rect x="18" y="101" width="18" height="21" rx="2" fill="none" stroke="#F4F4F6" stroke-width="1.7"/>
+<circle cx="27" cy="111" r="5" fill="none" stroke="#F4F4F6" stroke-width="1.7"/>
+<!-- tuner -->
+<path d="M 21 146 L 21 166 M 33 146 L 33 166 M 21 166 Q 27 174 33 166" fill="none" stroke="#8A8A92" stroke-width="1.7"/>
+<!-- metronome -->
+<path d="M 19 214 L 24 194 L 30 194 L 35 214 Z" fill="none" stroke="#8A8A92" stroke-width="1.7"/>
+<line x1="27" y1="212" x2="30" y2="197" stroke="#8A8A92" stroke-width="1.7"/>
+<!-- library -->
+<rect x="18" y="248" width="4" height="16" fill="#8A8A92"/><rect x="25" y="244" width="4" height="20" fill="#8A8A92"/><rect x="32" y="252" width="4" height="12" fill="#8A8A92"/>
+
+<!-- the three global knobs, bottom of the rail -->
+<circle cx="27" cy="790" r="15" fill="none" stroke="#26262A" stroke-width="3"/>
+<path d="M 16 801 A 15 15 0 0 1 21 777" fill="none" stroke="#F0A03E" stroke-width="3" stroke-linecap="round"/>
+<line x1="27" y1="790" x2="21" y2="781" stroke="#FFFFFF" stroke-width="2"/>
+<text x="27" y="820" fill="#8A8A92" font-size="11" text-anchor="middle">-34</text>
+<circle cx="27" cy="856" r="15" fill="none" stroke="#26262A" stroke-width="3"/>
+<line x1="27" y1="856" x2="27" y2="844" stroke="#FFFFFF" stroke-width="2"/>
+<text x="27" y="886" fill="#8A8A92" font-size="11" text-anchor="middle">3.0</text>
+
+<!-- ============================ header ============================ -->
+<text x="78" y="40" fill="#F4F4F6" font-size="19" font-weight="600">Unsaved rig</text>
+<path d="M 218 34 L 227 34 L 222.5 40 Z" fill="#8A8A92"/>
+
+<!-- The chain's own switch, next to the chain rather than alone in the far corner. Small,
+     because it is one control among several and not the loudest thing on the screen. -->
+<circle cx="1380" cy="34" r="13" fill="none" stroke="#F0A03E" stroke-width="2"/>
+<line x1="1380" y1="22" x2="1380" y2="34" stroke="#060607" stroke-width="5"/>
+<line x1="1380" y1="23" x2="1380" y2="33" stroke="#F0A03E" stroke-width="2" stroke-linecap="round"/>
+<text x="1360" y="39" fill="#8A8A92" font-size="12" text-anchor="end">CHAIN</text>
+
+<!-- ============================ the chain ============================ -->
+<!--
+  Cards, packed from the left, joined by short cable. 150 x 64 is enough for the type, what is
+  loaded into it, and its own on/off dot - which is the whole of what the line has to say.
+-->
+<line x1="78" y1="112" x2="1392" y2="112" stroke="#26262A" stroke-width="1"/>
+
+<!-- block 1: COMP -->
+<rect x="78" y="80" width="150" height="64" rx="6" fill="#060607" stroke="#26262A" stroke-width="1"/>
+<circle cx="94" cy="96" r="4" fill="#F0A03E"/>
+<text x="108" y="101" fill="#F4F4F6" font-size="13" font-weight="600">COMP</text>
+<text x="94" y="128" fill="#55555C" font-size="12">4:1  -18 dB</text>
+
+<line x1="228" y1="112" x2="252" y2="112" stroke="#26262A" stroke-width="2"/>
+
+<!-- block 2: COMP, switched out - the dot is what says so, and the card goes quiet -->
+<rect x="252" y="80" width="150" height="64" rx="6" fill="#060607" stroke="#1A1A1D" stroke-width="1"/>
+<circle cx="268" cy="96" r="4" fill="none" stroke="#55555C" stroke-width="1.5"/>
+<text x="282" y="101" fill="#55555C" font-size="13" font-weight="600">COMP</text>
+<text x="268" y="128" fill="#3A3A40" font-size="12">2:1  -24 dB</text>
+
+<line x1="402" y1="112" x2="426" y2="112" stroke="#26262A" stroke-width="2"/>
+
+<!-- block 3: NAM, selected. Outlined, the way a selected track is outlined in the Play view -->
+<rect x="426" y="80" width="150" height="64" rx="6" fill="#060607" stroke="#F0A03E" stroke-width="1.5"/>
+<circle cx="442" cy="96" r="4" fill="#F0A03E"/>
+<text x="456" y="101" fill="#F4F4F6" font-size="13" font-weight="600">NAM</text>
+<text x="442" y="128" fill="#8A8A92" font-size="12">Ampeg SVT - SM75</text>
+
+<line x1="576" y1="112" x2="600" y2="112" stroke="#26262A" stroke-width="2"/>
+
+<!-- block 4: EQ -->
+<rect x="600" y="80" width="150" height="64" rx="6" fill="#060607" stroke="#26262A" stroke-width="1"/>
+<circle cx="616" cy="96" r="4" fill="#F0A03E"/>
+<text x="630" y="101" fill="#F4F4F6" font-size="13" font-weight="600">EQ</text>
+<text x="616" y="128" fill="#55555C" font-size="12">4 bands</text>
+
+<line x1="750" y1="112" x2="774" y2="112" stroke="#26262A" stroke-width="2"/>
+
+<!-- add, immediately after the last block rather than at the far right of the window -->
+<rect x="774" y="80" width="64" height="64" rx="6" fill="#060607" stroke="#1A1A1D" stroke-width="1" stroke-dasharray="3 3"/>
+<line x1="806" y1="102" x2="806" y2="122" stroke="#55555C" stroke-width="1.6"/>
+<line x1="796" y1="112" x2="816" y2="112" stroke="#55555C" stroke-width="1.6"/>
+
+<!-- The lower lane is only drawn when something is on it. Shown here as the drop hint it is:
+     it appears while a block is being dragged, and not before. -->
+<text x="862" y="117" fill="#3A3A40" font-size="12">drag a block below the line to run it in parallel</text>
+
+<line x1="78" y1="184" x2="1392" y2="184" stroke="#26262A" stroke-width="1"/>
+
+<!-- ============================ the block's panel ============================ -->
+<!--
+  One header row that says what this is and what can be done to the whole of it, then only the
+  controls this type has. No TYPE column: type lives behind the name, like every other
+  "what is loaded" menu in the app.
+-->
+
+<!-- header -->
+<circle cx="96" cy="222" r="14" fill="none" stroke="#F0A03E" stroke-width="2"/>
+<line x1="96" y1="209" x2="96" y2="222" stroke="#060607" stroke-width="5"/>
+<line x1="96" y1="210" x2="96" y2="221" stroke="#F0A03E" stroke-width="2" stroke-linecap="round"/>
+
+<text x="128" y="229" fill="#F4F4F6" font-size="19" font-weight="600">NAM</text>
+<path d="M 180 223 L 189 223 L 184.5 229 Z" fill="#8A8A92"/>
+<text x="208" y="229" fill="#55555C" font-size="13">block 3 of 4</text>
+
+<!-- remove, at the far end of the header that names what it removes -->
+<line x1="1374" y1="216" x2="1388" y2="230" stroke="#55555C" stroke-width="1.6" stroke-linecap="round"/>
+<line x1="1388" y1="216" x2="1374" y2="230" stroke="#55555C" stroke-width="1.6" stroke-linecap="round"/>
+
+<!-- ============================ capture ============================ -->
+<!--
+  A field with the name in it and a caret, not twenty rows of library. Pressing it opens a
+  searchable list over the top; the library itself has a view of its own.
+-->
+<text x="78" y="284" fill="#55555C" font-size="12.3" font-weight="600" letter-spacing="1.2">CAPTURE</text>
+
+<rect x="78" y="298" width="520" height="44" rx="6" fill="#0D0D0F" stroke="#26262A" stroke-width="1"/>
+<text x="96" y="318" fill="#F4F4F6" font-size="15">Ampeg SVT - SM75</text>
+<text x="96" y="334" fill="#55555C" font-size="12">Ampeg SVT Classic with 6x10</text>
+<path d="M 566 315 L 578 315 L 572 323 Z" fill="#8A8A92"/>
+
+<rect x="614" y="298" width="104" height="44" rx="6" fill="#060607" stroke="#26262A" stroke-width="1"/>
+<text x="666" y="325" fill="#8A8A92" font-size="13" text-anchor="middle">Browse…</text>
+
+<!-- ============================ levels ============================ -->
+<text x="78" y="404" fill="#55555C" font-size="12.3" font-weight="600" letter-spacing="1.2">LEVELS</text>
+
+<!-- GAIN -->
+<circle cx="128" cy="472" r="34" fill="none" stroke="#26262A" stroke-width="4"/>
+<path d="M 104 496 A 34 34 0 0 1 128 438" fill="none" stroke="#F0A03E" stroke-width="4" stroke-linecap="round"/>
+<line x1="128" y1="472" x2="128" y2="444" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+<text x="128" y="526" fill="#8A8A92" font-size="12" text-anchor="middle">GAIN</text>
+<text x="128" y="544" fill="#F4F4F6" font-size="14" font-weight="600" text-anchor="middle">+0.0</text>
+
+<!-- BLEND -->
+<circle cx="248" cy="472" r="34" fill="none" stroke="#26262A" stroke-width="4"/>
+<path d="M 224 496 A 34 34 0 1 1 272 496" fill="none" stroke="#F0A03E" stroke-width="4" stroke-linecap="round"/>
+<line x1="248" y1="472" x2="272" y2="496" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+<text x="248" y="526" fill="#8A8A92" font-size="12" text-anchor="middle">BLEND</text>
+<text x="248" y="544" fill="#F4F4F6" font-size="14" font-weight="600" text-anchor="middle">100%</text>
+
+<!-- VOLUME -->
+<circle cx="368" cy="472" r="34" fill="none" stroke="#26262A" stroke-width="4"/>
+<path d="M 344 496 A 34 34 0 0 1 352 450" fill="none" stroke="#F0A03E" stroke-width="4" stroke-linecap="round"/>
+<line x1="368" y1="472" x2="350" y2="450" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+<text x="368" y="526" fill="#8A8A92" font-size="12" text-anchor="middle">VOLUME</text>
+<text x="368" y="544" fill="#F4F4F6" font-size="14" font-weight="600" text-anchor="middle">-4.6</text>
+
+<!-- ============================ tone ============================ -->
+<!--
+  Still here, still four knobs, but in its own labelled group rather than as a second cluster
+  of unrelated circles beside the first. PRE / POST is what it is: a two-state choice.
+-->
+<text x="560" y="404" fill="#55555C" font-size="12.3" font-weight="600" letter-spacing="1.2">TONE</text>
+
+<circle cx="610" cy="472" r="30" fill="none" stroke="#26262A" stroke-width="4"/>
+<line x1="610" y1="472" x2="610" y2="448" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+<text x="610" y="522" fill="#8A8A92" font-size="12" text-anchor="middle">LOW</text>
+<text x="610" y="540" fill="#F4F4F6" font-size="14" font-weight="600" text-anchor="middle">0.0</text>
+
+<circle cx="716" cy="472" r="30" fill="none" stroke="#26262A" stroke-width="4"/>
+<line x1="716" y1="472" x2="716" y2="448" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+<text x="716" y="522" fill="#8A8A92" font-size="12" text-anchor="middle">MID</text>
+<text x="716" y="540" fill="#F4F4F6" font-size="14" font-weight="600" text-anchor="middle">0.0</text>
+
+<circle cx="822" cy="472" r="30" fill="none" stroke="#26262A" stroke-width="4"/>
+<line x1="822" y1="472" x2="822" y2="448" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+<text x="822" y="522" fill="#8A8A92" font-size="12" text-anchor="middle">HIGH</text>
+<text x="822" y="540" fill="#F4F4F6" font-size="14" font-weight="600" text-anchor="middle">0.0</text>
+
+<circle cx="928" cy="472" r="30" fill="none" stroke="#26262A" stroke-width="4"/>
+<path d="M 907 493 A 30 30 0 0 1 907 451" fill="none" stroke="#F0A03E" stroke-width="4" stroke-linecap="round"/>
+<line x1="928" y1="472" x2="907" y2="451" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+<text x="928" y="522" fill="#8A8A92" font-size="12" text-anchor="middle">MID FREQ</text>
+<text x="928" y="540" fill="#F4F4F6" font-size="14" font-weight="600" text-anchor="middle">700</text>
+
+<!-- where the stack sits in the block -->
+<rect x="1010" y="456" width="70" height="32" rx="5" fill="#060607" stroke="#26262A" stroke-width="1"/>
+<text x="1045" y="477" fill="#55555C" font-size="12.5" text-anchor="middle">PRE</text>
+<rect x="1084" y="456" width="70" height="32" rx="5" fill="#F0A03E" fill-opacity="0.16" stroke="#F0A03E" stroke-width="1"/>
+<text x="1119" y="477" fill="#F0A03E" font-size="12.5" text-anchor="middle">POST</text>
+
+<!--
+  Everything below 580 is left empty on purpose. On an EQ block this is where the curve goes,
+  at the full width the capture list used to take. That is the room the change buys.
+-->
+<text x="78" y="626" fill="#3A3A40" font-size="12">room the capture list was taking. An EQ block draws its curve here, full width.</text>
+
+<!-- ============================ transport ============================ -->
+<line x1="54" y1="820" x2="1440" y2="820" stroke="#1A1A1D" stroke-width="1"/>
+<g fill="#8A8A92">
+  <path d="M 700 852 L 700 872 M 700 852 L 690 862 Z" stroke="#8A8A92" stroke-width="2"/>
+  <path d="M 688 852 L 688 872 M 704 852 L 704 872 L 690 862 Z" fill="#8A8A92"/>
+  <path d="M 736 852 L 736 872 L 722 862 Z M 752 852 L 752 872 L 738 862 Z" fill="#8A8A92"/>
+  <path d="M 786 850 L 806 862 L 786 874 Z" fill="#8A8A92"/>
+  <rect x="834" y="853" width="18" height="18" rx="2" fill="#8A8A92"/>
+  <path d="M 884 852 L 884 872 L 898 862 Z M 900 852 L 900 872 L 914 862 Z" fill="#8A8A92"/>
+</g>
+<text x="626" y="898" fill="#8A8A92" font-size="12">0:00.0</text>
+<rect x="672" y="892" width="480" height="3" rx="2" fill="#26262A"/>
+<circle cx="676" cy="893" r="5" fill="#8A8A92"/>
+<text x="1166" y="898" fill="#55555C" font-size="12">0:00.0</text>
+</svg>

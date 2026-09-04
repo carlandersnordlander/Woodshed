@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="design/woodshed-lockup-horisontell.svg" alt="Woodshed" width="420">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="design/woodshed-lockup-horisontell.svg">
+    <img src="design/woodshed-lockup-horisontell-light.svg" alt="Woodshed" width="420">
+  </picture>
 </div>
 
 > *"Woodshedding", or shedding, is a term commonly used to describe the act of practicing some

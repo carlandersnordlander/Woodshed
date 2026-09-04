@@ -62,3 +62,7 @@ imgui.ini
 
 # What TONE3000 writes beside a downloaded capture, and the raw audio a capture was made from.
 _tone3000.json
+
+# Built installers. The .iss that makes them is source; a three-megabyte setup.exe rebuilt on every
+# release is not, and belongs on the releases page rather than in the history.
+packaging/output/

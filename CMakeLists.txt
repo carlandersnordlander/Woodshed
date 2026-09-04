@@ -1,4 +1,18 @@
-cmake_minimum_required(VERSION 3.14) # FetchContent (used for the Eigen fallback and by standalone/) needs 3.14+
+cmake_minimum_required(VERSION 3.15) # CMP0091, which is how the MSVC runtime below is chosen
+
+# --- one file, no redistributable ---
+#
+# Link the C++ runtime into the binary instead of against MSVCP140.dll and friends. Without this the
+# app runs on this machine and fails on a machine that has never had Visual Studio on it, with a
+# dialog naming a DLL that means nothing to the person reading it. The cost is about half a megabyte.
+#
+# CMP0091 is what makes the variable below the single place this is decided; under the old behaviour
+# the /MD flag is baked into CMAKE_CXX_FLAGS and every subproject has to be talked out of it
+# separately.
+cmake_policy(SET CMP0091 NEW)
+# Set unguarded, and before project(): MSVC is not defined until the compiler has been probed, so an
+# if(MSVC) around this is false exactly when it matters. Compilers that are not MSVC ignore it.
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "MSVC runtime linkage")
 
 file(READ "${CMAKE_CURRENT_LIST_DIR}/NAM/version.h" _nam_version_header)
 foreach(_component MAJOR MINOR PATCH)

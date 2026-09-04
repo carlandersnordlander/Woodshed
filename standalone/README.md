@@ -48,7 +48,7 @@ cmake -B build -S .
 cmake --build build --config Release --target nam_standalone
 ```
 
-The executable lands at `build/standalone/Release/nam_standalone.exe`. Everything is linked
+The executable lands at `build/standalone/Release/Woodshed.exe`. Everything is linked
 statically, so it is a single file you can copy anywhere.
 
 A plain `git clone` without `--recursive` is fine: when `Dependencies/eigen` and
@@ -59,7 +59,7 @@ To leave the app out of a build of this repo entirely, configure with
 
 ## Running
 
-1. Launch `nam_standalone.exe` and open **Settings**.
+1. Launch `Woodshed.exe` and open **Settings**.
 2. Pick an audio API - ASIO if your interface has a driver for it, WASAPI otherwise - then an
    input and output device, a sample rate and a buffer size, and click **Open**.
 3. Point the capture folder at a directory of `.nam` and `.wav` files (this repo's

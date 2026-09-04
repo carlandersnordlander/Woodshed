@@ -50,10 +50,10 @@ target_link_libraries(nam_ui_imgui PUBLIC glfw)
 set(RTAUDIO_API_WASAPI ON CACHE BOOL "" FORCE)
 set(RTAUDIO_API_ASIO ON CACHE BOOL "" FORCE)
 set(RTAUDIO_BUILD_TESTING OFF CACHE BOOL "" FORCE)
-# Keep the MSVC runtime linkage consistent with the rest of this build (glfw/imgui/our own
-# sources all use the default dynamic /MD runtime); RtAudio's own CMakeLists otherwise
-# switches to /MT when built static, which would cause a runtime-library mismatch at link time.
-set(RTAUDIO_STATIC_MSVCRT OFF CACHE BOOL "" FORCE)
+# Keep the MSVC runtime linkage consistent with the rest of this build, which links the runtime
+# statically so the app needs no Visual C++ redistributable - see CMAKE_MSVC_RUNTIME_LIBRARY in the
+# root CMakeLists. Mixing the two is a link error, not a subtle bug, so this has to agree.
+set(RTAUDIO_STATIC_MSVCRT ON CACHE BOOL "" FORCE)
 FetchContent_Declare(rtaudio
 	URL https://github.com/thestk/rtaudio/archive/refs/tags/6.0.1.zip
 	URL_HASH SHA256=ac27dfbfa764441b2b14a7180861d044d944189b5d792cb231fbffc540220fc5
@@ -151,6 +151,9 @@ endif()
 set_target_properties(nam_standalone PROPERTIES
 	CXX_STANDARD 20
 	CXX_STANDARD_REQUIRED ON
+	# The target keeps its old name, so the build command in the README does not change; the file it
+	# produces is named after the application, because that is what ends up on somebody's Start menu.
+	OUTPUT_NAME "Woodshed"
 )
 
 # winhttp: TONE3000 HTTPS calls. crypt32: DPAPI encryption of the stored refresh token.

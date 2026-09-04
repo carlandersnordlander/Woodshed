@@ -134,13 +134,13 @@ laptop give it ten and let it finish.
 The last line tells you where the program is:
 
 ```
-nam_standalone.vcxproj -> ...\build\standalone\Release\nam_standalone.exe
+nam_standalone.vcxproj -> ...\build\standalone\Release\Woodshed.exe
 ```
 
 ### 6. Run it
 
 In the folder from step 2, open `build`, then `standalone`, then `Release`, and double-click
-**nam_standalone.exe**. You can also drag it to your Desktop — it is one self-contained file and it
+**Woodshed.exe**. You can also drag it to your Desktop — it is one self-contained file and it
 works from anywhere.
 
 ### 7. Make it hear something

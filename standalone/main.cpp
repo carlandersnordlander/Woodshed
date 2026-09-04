@@ -2,6 +2,9 @@
 // GLFW + OpenGL3 window/context, Dear ImGui for the UI, RtAudio for realtime audio I/O.
 
 #include <cstdio>
+#include <filesystem>
+#include <string>
+#include <system_error>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -9,6 +12,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Config.h"
 #include "WindowChrome.h"
 #include "ui/MainWindow.h"
 #include "ui/Theme.h"
@@ -52,6 +56,19 @@ int main(int, char**)
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+  // --- where the window layout is remembered ---
+  //
+  // Dear ImGui writes this beside whatever the working directory happens to be, which for an
+  // installed app is Program Files: not writable, so the layout is silently never saved, and for an
+  // app started from a shortcut it is wherever the shortcut points. It belongs with the rest of the
+  // app's state. Held in a static because ImGui keeps the pointer rather than the string.
+  static const std::string iniPath = (nam_ui::AppConfig::GetConfigFolder() / "imgui.ini").string();
+  {
+    std::error_code ec;
+    std::filesystem::create_directories(nam_ui::AppConfig::GetConfigFolder(), ec);
+  }
+  io.IniFilename = iniPath.c_str();
 
   nam_ui::theme::LoadFonts();
   nam_ui::theme::Apply();

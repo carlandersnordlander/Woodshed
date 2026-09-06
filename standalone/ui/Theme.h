@@ -149,6 +149,8 @@ enum class Icon
   Follow,
   /// Edges pulled onto the nearest beat, drawn as the two arrows point at the line between them.
   Snap,
+  /// How fast and in what key: a note with a sharp beside it.
+  Pitch,
   Ruler,
   Eye,
   Sliders,
@@ -206,9 +208,14 @@ bool IconButton(const char* id, Icon icon, float size, IconStyle style = IconSty
 bool SlimSlider(const char* id, float* value, float minValue, float maxValue, float defaultValue, float width,
                 const char* format = "%.1f");
 
-/// The same control stood on end, for a level that pops up over the thing it belongs to.
+/// rief The same control stood on end, for a level that pops up over the thing it belongs to.
+///
+/// \param detent a value the handle catches on as it passes: full speed on a speed control, no
+///        transposition on a pitch one. The one setting you return to more often than any other,
+///        and the one it must be possible to land on exactly without watching the number.
+/// \param detentWidth how close counts as caught, in the value's own units. Zero for no detent.
 bool SlimSliderVertical(const char* id, float* value, float minValue, float maxValue, float defaultValue, float height,
-                        const char* format = "%.1f");
+                        const char* format = "%.1f", float detent = 0.0f, float detentWidth = 0.0f);
 
 /// \brief A small square toggle with a letter in it - the M and S of a mixer strip.
 ///

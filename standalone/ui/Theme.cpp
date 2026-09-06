@@ -561,6 +561,33 @@ void DrawIcon(ImDrawList* draw, Icon icon, ImVec2 c, float size, ImU32 colour)
       break;
     }
 
+    case Icon::Pitch:
+    {
+      // A note and a sharp: how fast it goes and what key it comes out in, which are the two things
+      // behind this key. The note takes the left, the sharp the right, neither crowding the other.
+      const float hx = c.x - r * 0.46f;
+      const float hy = c.y + r * 0.46f;
+      const float hr = r * 0.30f;
+      // The head is an oval lying slightly flat, the way a notehead is drawn; a circle reads as a dot.
+      draw->AddEllipseFilled(ImVec2(hx, hy), ImVec2(hr * 1.15f, hr * 0.85f), colour, 0.0f, 16);
+      draw->AddLine(ImVec2(hx + hr, hy), ImVec2(hx + hr, c.y - r * 0.72f), colour, thickness);
+
+      const float sx = c.x + r * 0.44f;
+      const float sy = c.y - r * 0.06f;
+      const float ss = r * 0.40f;
+      const float fine = thickness * 0.8f;
+      for (const float side : {-1.0f, 1.0f})
+      {
+        draw->AddLine(ImVec2(sx + side * ss * 0.45f, sy - ss * 1.05f), ImVec2(sx + side * ss * 0.45f, sy + ss * 1.05f),
+                      colour, fine);
+        // The cross-strokes lean, as they do on a written sharp - level, the whole thing reads
+        // as a hash rather than as an accidental.
+        draw->AddLine(ImVec2(sx - ss, sy + side * ss * 0.45f + ss * 0.18f),
+                      ImVec2(sx + ss, sy + side * ss * 0.45f - ss * 0.18f), colour, fine);
+      }
+      break;
+    }
+
     case Icon::Ruler:
       draw->AddRect(ImVec2(c.x - r * 0.72f, c.y - r * 0.40f), ImVec2(c.x + r * 0.72f, c.y + r * 0.40f), colour,
                     size * 0.08f, 0, thickness);
@@ -719,7 +746,7 @@ bool SpinnerButton(const char* id, float size)
 }
 
 bool SlimSliderVertical(const char* id, float* value, float minValue, float maxValue, float defaultValue, float height,
-                        const char* format)
+                        const char* format, float detent, float detentWidth)
 {
   constexpr float kWidth = 16.0f;
   constexpr float kTrack = 4.0f;
@@ -735,7 +762,14 @@ bool SlimSliderVertical(const char* id, float* value, float minValue, float maxV
   {
     // Up is more, which is the way every fader ever built runs.
     const float t = 1.0f - std::clamp((ImGui::GetIO().MousePos.y - pos.y) / height, 0.0f, 1.0f);
-    const float wanted = minValue + t * (maxValue - minValue);
+    float wanted = minValue + t * (maxValue - minValue);
+
+    // The handle catches on its detent rather than passing smoothly over it. Full speed and no
+    // transposition are settings you come back to constantly, and hitting them exactly by dragging
+    // to a pixel means watching the number instead of the music.
+    if (detentWidth > 0.0f && std::fabs(wanted - detent) < detentWidth)
+      wanted = detent;
+
     if (wanted != *value)
     {
       *value = wanted;
@@ -759,6 +793,15 @@ bool SlimSliderVertical(const char* id, float* value, float minValue, float maxV
                       ImGui::GetColorU32(ImVec4(1, 1, 1, 0.10f)), kTrack * 0.5f);
   draw->AddRectFilled(ImVec2(midX - kTrack * 0.5f, at), ImVec2(midX + kTrack * 0.5f, pos.y + height),
                       ImGui::GetColorU32(ImVec4(1, 1, 1, over ? 0.85f : 0.55f)), kTrack * 0.5f);
+  // A mark across the track where it catches, so the detent is something you can see coming rather
+  // than only feel.
+  if (detentWidth > 0.0f && span > 0.0f)
+  {
+    const float catchY = pos.y + height * (1.0f - std::clamp((detent - minValue) / span, 0.0f, 1.0f));
+    draw->AddLine(ImVec2(midX - kWidth * 0.34f, catchY), ImVec2(midX + kWidth * 0.34f, catchY),
+                  ImGui::GetColorU32(ImVec4(1, 1, 1, 0.28f)), 1.0f);
+  }
+
   draw->AddCircleFilled(ImVec2(midX, at), over ? 7.0f : 5.0f,
                         ImGui::GetColorU32(over ? Accent() : ImVec4(1, 1, 1, 0.72f)), 24);
 

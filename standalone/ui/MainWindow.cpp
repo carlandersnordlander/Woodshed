@@ -5414,6 +5414,11 @@ void MainWindow::DrawTransportBar()
   // bar: each is something you reach for while looking at the waveform, and lit or unlit they say
   // how the timeline is behaving without anything having to be opened to find out.
   //
+  // All of them armed in the accent rather than filled white. White is the strongest thing this
+  // palette can do and the bar spends it on Play alone; four white squares in a row next to it and
+  // the eye no longer knows which one is the button that matters. These are modes, and a mode being
+  // on is exactly what the accent is for.
+  //
   // Only where there is a timeline. On the tuner or the rig they would be four controls over
   // something that is not on the screen.
   if (mView == View::Player)
@@ -5429,7 +5434,7 @@ void MainWindow::DrawTransportBar()
     {
       const int active = player.GetActiveLoop();
       placeAt(left, keySize.y);
-      theme::TransportKey("##loop", theme::Icon::Loop, keySize, active >= 0);
+      theme::TransportKey("##loop", theme::Icon::Loop, keySize, false, active >= 0);
 
       const ImVec2 loopMin = ImGui::GetItemRectMin();
       const bool loopHovered = ImGui::IsItemHovered();
@@ -5530,11 +5535,99 @@ void MainWindow::DrawTransportBar()
         ImGui::EndPopup();
       }
 
+      left += keySize.x + 6.0f;
+    }
+
+    // --- how fast, and in what key ---
+    //
+    // Two faders behind one key, because they are set at the start of a passage and then left: on
+    // the bar the whole time they were two labelled sliders and three hundred pixels, for something
+    // touched once. Lit whenever either is away from where it started, so a song playing slow or in
+    // another key never looks like a song playing normally.
+    {
+      const float currentSpeed = player.GetSpeed();
+      const float currentPitch = player.GetSemitones();
+      const bool altered = std::fabs(currentSpeed - 1.0f) > 0.005f || std::fabs(currentPitch) > 0.01f;
+
+      placeAt(left, keySize.y);
+      if (theme::TransportKey("##speedpitch", theme::Icon::Pitch, keySize, false, altered))
+        ImGui::OpenPopup("##speedpitchpop");
+
+      const ImVec2 keyMin = ImGui::GetItemRectMin();
+      if (ImGui::IsItemHovered() && !ImGui::IsPopupOpen("##speedpitchpop"))
+      {
+        if (altered)
+          ImGui::SetTooltip("%.0f%% speed, %+.0f semitones. Click to change", currentSpeed * 100.0f, currentPitch);
+        else
+          ImGui::SetTooltip("Speed and pitch, each without the other");
+      }
+
+      ImGui::SetNextWindowPos(ImVec2(keyMin.x + keySize.x * 0.5f, keyMin.y - 6.0f), ImGuiCond_Always,
+                              ImVec2(0.5f, 1.0f));
+      ImGui::PushStyleColor(ImGuiCol_Border, theme::Line());
+      ImGui::PushStyleVar(ImGuiStyleVar_PopupBorderSize, 1.0f);
+      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(14.0f, 12.0f));
+      const bool spOpen = ImGui::BeginPopup("##speedpitchpop", ImGuiWindowFlags_NoMove
+                                                                 | ImGuiWindowFlags_AlwaysAutoResize
+                                                                 | ImGuiWindowFlags_NoSavedSettings);
+      ImGui::PopStyleVar(2);
+      ImGui::PopStyleColor();
+
+      if (spOpen)
+      {
+        constexpr float kFader = 128.0f;
+
+        ImGui::BeginGroup();
+        theme::Label("Speed");
+        float percent = currentSpeed * 100.0f;
+        // Catching at 100 within two points: a fader you can put back exactly without watching it.
+        if (theme::SlimSliderVertical("##speedfader", &percent, kMinPlaybackSpeed * 100.0f,
+                                      kMaxPlaybackSpeed * 100.0f, 100.0f, kFader, "%.0f%%", 100.0f, 2.0f))
+          player.SetSpeed(percent / 100.0f);
+        ImGui::EndGroup();
+
+        ImGui::SameLine(0.0f, 30.0f);
+
+        ImGui::BeginGroup();
+        theme::Label("Pitch");
+        float semitones = currentPitch;
+        // Half a semitone either side of nothing, which is as wide as it can be without swallowing
+        // the first step up and the first step down.
+        if (theme::SlimSliderVertical("##pitchfader", &semitones, -12.0f, 12.0f, 0.0f, kFader, "%+.0f st", 0.0f, 0.5f))
+          player.SetSemitones(std::round(semitones));
+        ImGui::EndGroup();
+
+        // The round numbers, kept from the right-click menu these two used to have. A quarter speed
+        // is a thing you ask for by name, not by dragging until the number looks right.
+        //
+        // Buttons rather than selectables: four percentages in a row under two faders read as a
+        // caption of what the faders are set to, and nobody presses a caption.
+        ImGui::Spacing();
+        for (const float preset : {1.0f, 0.75f, 0.5f, 0.25f})
+        {
+          char label[16];
+          std::snprintf(label, sizeof(label), "%.0f%%", preset * 100.0f);
+          if (preset != 1.0f)
+            ImGui::SameLine(0.0f, 4.0f);
+
+          // The theme's button has no fill at rest, which on this black is no edge at all - so each
+          // gets one here. The one the song is actually playing at takes the accent instead.
+          const bool current = std::fabs(currentSpeed - preset) < 0.005f;
+          ImGui::PushStyleColor(ImGuiCol_Button, current ? theme::AccentDim() : ImVec4(1, 1, 1, 0.07f));
+          ImGui::PushStyleColor(ImGuiCol_Text, current ? theme::Accent() : theme::TextDim());
+          if (ImGui::Button(label, ImVec2(34.0f, 0.0f)))
+            player.SetSpeed(preset);
+          ImGui::PopStyleColor(2);
+        }
+
+        ImGui::EndPopup();
+      }
+
       left += keySize.x + 14.0f;
     }
 
     placeAt(left, keySize.y);
-    if (theme::TransportKey("##showgrid", theme::Icon::Grid, keySize, mShowGrid))
+    if (theme::TransportKey("##showgrid", theme::Icon::Grid, keySize, false, mShowGrid))
       mShowGrid = !mShowGrid;
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip(mTempo.valid ? (mShowGrid ? "Bars and beats drawn through the tracks. Click for a clock instead"
@@ -5543,14 +5636,14 @@ void MainWindow::DrawTransportBar()
     left += keySize.x + 4.0f;
 
     placeAt(left, keySize.y);
-    if (theme::TransportKey("##snapgrid", theme::Icon::Snap, keySize, mSnapToGrid))
+    if (theme::TransportKey("##snapgrid", theme::Icon::Snap, keySize, false, mSnapToGrid))
       mSnapToGrid = !mSnapToGrid;
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip(mSnapToGrid ? "Loop edges land on the nearest beat" : "Loop edges land where you let go");
     left += keySize.x + 4.0f;
 
     placeAt(left, keySize.y);
-    if (theme::TransportKey("##followhead", theme::Icon::Follow, keySize, mFollowPlayhead))
+    if (theme::TransportKey("##followhead", theme::Icon::Follow, keySize, false, mFollowPlayhead))
       mFollowPlayhead = !mFollowPlayhead;
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip(mFollowPlayhead ? "The view keeps up with the playhead (F)"
@@ -6071,41 +6164,6 @@ void MainWindow::DrawProjectBar()
 
   // A run sent to the background is reported in the lane it was started from, which is where the
   // offer to start it was made and where the result will arrive.
-
-  // --- the two that are touched while the song is playing ---
-  theme::ToolbarSeparator();
-  theme::Label("Speed");
-  ImGui::SameLine();
-  ImGui::SetNextItemWidth(150);
-  float speedPercent = player.GetSpeed() * 100.0f;
-  if (ImGui::SliderFloat("##speed", &speedPercent, kMinPlaybackSpeed * 100.0f, kMaxPlaybackSpeed * 100.0f, "%.0f%%"))
-    player.SetSpeed(speedPercent / 100.0f);
-
-  if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
-    ImGui::OpenPopup("##speedpopup");
-  if (ImGui::BeginPopup("##speedpopup"))
-  {
-    for (const float preset : {1.0f, 0.85f, 0.75f, 0.5f, 0.25f})
-    {
-      char label[16];
-      std::snprintf(label, sizeof(label), "%.0f%%", preset * 100.0f);
-      if (ImGui::MenuItem(label, nullptr, std::fabs(player.GetSpeed() - preset) < 0.005f))
-        player.SetSpeed(preset);
-    }
-    ImGui::EndPopup();
-  }
-  if (ImGui::IsItemHovered())
-    ImGui::SetTooltip("Slower without changing the pitch. Right-click for the round numbers");
-
-  theme::ToolbarSeparator();
-  theme::Label("Pitch");
-  ImGui::SameLine();
-  ImGui::SetNextItemWidth(130);
-  float semitones = player.GetSemitones();
-  if (ImGui::SliderFloat("##pitch", &semitones, -12.0f, 12.0f, "%+.0f st"))
-    player.SetSemitones(std::round(semitones));
-  if (ImGui::IsItemHovered())
-    ImGui::SetTooltip("Transpose without changing the speed");
 
   // --- what the timeline shows, out at the right ---
   const float viewButton = ImGui::GetFrameHeight();

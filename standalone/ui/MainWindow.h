@@ -318,8 +318,6 @@ private:
   /// Where that environment lives, whether or not it has been made.
   static std::filesystem::path ManagedPythonPath();
 
-  /// The master switch for the note lanes; each track also has its own.
-  bool mShowNotes = true;
   /// Draws one track's notes under its waveform. Called from inside the timeline, which owns the
   /// mapping from seconds to pixels.
   void DrawNoteLane(const NoteTrack& notes, float top, float height, float left, float right, double viewStart,

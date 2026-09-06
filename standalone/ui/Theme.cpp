@@ -520,6 +520,47 @@ void DrawIcon(ImDrawList* draw, Icon icon, ImVec2 c, float size, ImU32 colour)
       }
       break;
 
+    case Icon::Follow:
+    {
+      // The playhead standing inside what is on screen: "[ | ]". The view is two brackets rather
+      // than a closed rectangle, because a rectangle with a line down the middle of it is a
+      // rectangle in two halves - at twenty pixels that is what it reads as, and nothing about it
+      // says playhead.
+      const float bx = r * 0.82f;
+      const float by = r * 0.52f;
+      const float nub = r * 0.26f;
+      const float thin = thickness * 0.8f;
+
+      for (const float side : {-1.0f, 1.0f})
+      {
+        const float x = c.x + bx * side;
+        draw->AddLine(ImVec2(x, c.y - by), ImVec2(x, c.y + by), colour, thin);
+        draw->AddLine(ImVec2(x, c.y - by), ImVec2(x - nub * side, c.y - by), colour, thin);
+        draw->AddLine(ImVec2(x, c.y + by), ImVec2(x - nub * side, c.y + by), colour, thin);
+      }
+
+      draw->AddLine(ImVec2(c.x, c.y - r * 0.30f), ImVec2(c.x, c.y + r * 0.78f), colour, thickness);
+      draw->AddTriangleFilled(ImVec2(c.x - r * 0.34f, c.y - r * 0.86f), ImVec2(c.x + r * 0.34f, c.y - r * 0.86f),
+                              ImVec2(c.x, c.y - r * 0.22f), colour);
+      break;
+    }
+
+    case Icon::Snap:
+    {
+      // Two arrows closing onto the line between them: the shape a person draws for this by hand.
+      const float gap = r * 0.22f;
+      const float reach = r * 0.78f;
+      const float wing = r * 0.42f;
+      draw->AddLine(ImVec2(c.x, c.y - r * 0.72f), ImVec2(c.x, c.y + r * 0.72f), colour, thickness);
+      // Pointing inwards, at the line: ">|<". The base of each is out at the edge and the tip is
+      // against the line, which is the direction an edge travels when it snaps.
+      draw->AddTriangleFilled(ImVec2(c.x - reach, c.y - wing), ImVec2(c.x - reach, c.y + wing),
+                              ImVec2(c.x - gap, c.y), colour);
+      draw->AddTriangleFilled(ImVec2(c.x + reach, c.y - wing), ImVec2(c.x + reach, c.y + wing),
+                              ImVec2(c.x + gap, c.y), colour);
+      break;
+    }
+
     case Icon::Ruler:
       draw->AddRect(ImVec2(c.x - r * 0.72f, c.y - r * 0.40f), ImVec2(c.x + r * 0.72f, c.y + r * 0.40f), colour,
                     size * 0.08f, 0, thickness);

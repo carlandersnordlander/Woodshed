@@ -4384,11 +4384,100 @@ void MainWindow::DrawTimeline(float width, float height, float laneHeight)
   // Set by a note or a chord that took this frame's click, so the seek further down leaves it be.
   mNoteAudition = false;
 
+  // Which beats begin a bar. When the model marked them, those are used: a bar count worked out
+  // from one offset and a fixed length is only right while the meter never changes, and a single
+  // dropped beat puts every bar line after it on the wrong one.
+  const int beatsPerBar = std::max(1, mGridBeatsPerBar);
+
+  // Only when there is a flag for every beat. A half-filled list would have the ruler counting the
+  // model's bars up to the last beat it knew about and then repeating that number for the rest of
+  // the song, which is what it did.
+  const bool useFlags = !mTempo.downbeats.empty() && mTempo.downbeats.size() == mTempo.beats.size();
+
+  // Counted once for the frame rather than once per bar line. The ruler asks for a bar number at
+  // every beat in view, and counting flags from the start each time is a loop inside a loop.
+  std::vector<int> barsUpTo;
+  if (useFlags)
+  {
+    barsUpTo.resize(mTempo.downbeats.size());
+    int count = 0;
+    for (size_t i = 0; i < mTempo.downbeats.size(); i++)
+    {
+      count += (mTempo.downbeats[i] != 0) ? 1 : 0;
+      barsUpTo[i] = count;
+    }
+  }
+
+  const auto isBarLine = [&](long long index)
+  {
+    if (useFlags && index >= 0 && static_cast<size_t>(index) < mTempo.downbeats.size())
+      return mTempo.downbeats[static_cast<size_t>(index)] != 0;
+    return (((index - mTempo.downbeatOffset) % beatsPerBar) + beatsPerBar) % beatsPerBar == 0;
+  };
+
+  const auto barNumberOf = [&](long long index) -> long long
+  {
+    if (!barsUpTo.empty() && index >= 0)
+    {
+      // Counted rather than divided, because the bars are not all the same length once the model
+      // has had its say.
+      if (static_cast<size_t>(index) < barsUpTo.size())
+        return std::max(1, barsUpTo[static_cast<size_t>(index)]);
+
+      // Past the last beat it gave us - the song runs on beyond what was analysed - so the count
+      // carries on at the length the piece was mostly in.
+      const long long beyond = index - static_cast<long long>(barsUpTo.size()) + 1;
+      return barsUpTo.back() + beyond / beatsPerBar;
+    }
+
+    const long long fromDownbeat = index - mTempo.downbeatOffset;
+    const long long bar = (fromDownbeat >= 0) ? fromDownbeat / beatsPerBar
+                                              : -((-fromDownbeat + beatsPerBar - 1) / beatsPerBar);
+    return bar + 1; // bar 1 is the first, not bar 0
+  };
+
   // --- one waveform per track, stacked ---
   if (!tracks.empty())
   {
     // The lanes are clipped to their own strip so a scrolled-up lane cannot draw over the ruler.
     draw->PushClipRect(ImVec2(origin.x, lanesTop), ImVec2(area.x, area.y), true);
+
+    // --- the beat grid, down the whole stack and behind everything on it ---
+    //
+    // The ruler has always numbered the bars, which answers "which bar is this" but not "where in
+    // this bar does that note fall" - for that the line has to come down past the waveform it is
+    // being read against. Drawn first, so it lies under the waveforms rather than over them:
+    // a grid you read through, not one you read instead.
+    if (mShowGrid && mTempo.valid && mTempo.bpm > 0.0f)
+    {
+      const std::vector<double> gridBeats = BeatTimes();
+      const double perPixel = viewSpan / static_cast<double>(std::max(1.0f, width));
+
+      // Below about six pixels apart a line per beat is a wash rather than a grid, so at that point
+      // only the bars are drawn - and below the same spacing for bars, nothing is.
+      const double beatSpacing = (gridBeats.size() > 1) ? (gridBeats[1] - gridBeats[0]) / perPixel : 1.0e9;
+      const bool everyBeat = beatSpacing > 6.0;
+      const bool anyBars = beatSpacing * std::max(1, mGridBeatsPerBar) > 6.0;
+
+      const ImU32 beatLine = ImGui::GetColorU32(ImVec4(1, 1, 1, 0.07f));
+      const ImU32 barLine = ImGui::GetColorU32(ImVec4(1, 1, 1, 0.16f));
+
+      if (anyBars)
+      {
+        for (size_t i = 0; i < gridBeats.size(); i++)
+        {
+          if (gridBeats[i] < viewStart || gridBeats[i] > viewStart + viewSpan)
+            continue;
+
+          const bool bar = isBarLine(static_cast<long long>(i));
+          if (!bar && !everyBeat)
+            continue;
+
+          const float gx = xForTime(gridBeats[i]);
+          draw->AddLine(ImVec2(gx, lanesTop), ImVec2(gx, area.y), bar ? barLine : beatLine, bar ? 1.4f : 1.0f);
+        }
+      }
+    }
 
     for (size_t t = 0; t < tracks.size(); t++)
     {
@@ -4412,7 +4501,7 @@ void MainWindow::DrawTimeline(float width, float height, float laneHeight)
       // The notes take the bottom of the lane and the waveform keeps the rest, so the two are
       // read together: the shape you can hear, and the name of what made it.
       const auto found = mTrackNotes.find(track.id);
-      const bool showNotes = mShowNotes && found != mTrackNotes.end() && found->second.visible
+      const bool showNotes = found != mTrackNotes.end() && found->second.visible
                              && (!found->second.notes.empty() || !found->second.chords.empty());
 
       // Chords get a fixed row; notes get what they need under it - a chord stack more than a
@@ -4665,57 +4754,6 @@ void MainWindow::DrawTimeline(float width, float height, float laneHeight)
     }
   }
 
-  // Which beats begin a bar. When the model marked them, those are used: a bar count worked out
-  // from one offset and a fixed length is only right while the meter never changes, and a single
-  // dropped beat puts every bar line after it on the wrong one.
-  const int beatsPerBar = std::max(1, mGridBeatsPerBar);
-
-  // Only when there is a flag for every beat. A half-filled list would have the ruler counting the
-  // model's bars up to the last beat it knew about and then repeating that number for the rest of
-  // the song, which is what it did.
-  const bool useFlags = !mTempo.downbeats.empty() && mTempo.downbeats.size() == mTempo.beats.size();
-
-  // Counted once for the frame rather than once per bar line. The ruler asks for a bar number at
-  // every beat in view, and counting flags from the start each time is a loop inside a loop.
-  std::vector<int> barsUpTo;
-  if (useFlags)
-  {
-    barsUpTo.resize(mTempo.downbeats.size());
-    int count = 0;
-    for (size_t i = 0; i < mTempo.downbeats.size(); i++)
-    {
-      count += (mTempo.downbeats[i] != 0) ? 1 : 0;
-      barsUpTo[i] = count;
-    }
-  }
-
-  const auto isBarLine = [&](long long index)
-  {
-    if (useFlags && index >= 0 && static_cast<size_t>(index) < mTempo.downbeats.size())
-      return mTempo.downbeats[static_cast<size_t>(index)] != 0;
-    return (((index - mTempo.downbeatOffset) % beatsPerBar) + beatsPerBar) % beatsPerBar == 0;
-  };
-
-  const auto barNumberOf = [&](long long index) -> long long
-  {
-    if (!barsUpTo.empty() && index >= 0)
-    {
-      // Counted rather than divided, because the bars are not all the same length once the model
-      // has had its say.
-      if (static_cast<size_t>(index) < barsUpTo.size())
-        return std::max(1, barsUpTo[static_cast<size_t>(index)]);
-
-      // Past the last beat it gave us - the song runs on beyond what was analysed - so the count
-      // carries on at the length the piece was mostly in.
-      const long long beyond = index - static_cast<long long>(barsUpTo.size()) + 1;
-      return barsUpTo.back() + beyond / beatsPerBar;
-    }
-
-    const long long fromDownbeat = index - mTempo.downbeatOffset;
-    const long long bar = (fromDownbeat >= 0) ? fromDownbeat / beatsPerBar
-                                              : -((-fromDownbeat + beatsPerBar - 1) / beatsPerBar);
-    return bar + 1; // bar 1 is the first, not bar 0
-  };
 
   // No grid over the waveforms. The bars are numbered along the ruler, which is where you read
   // them; ruling every lane as well drew the same information six more times, over the top of the
@@ -4735,7 +4773,10 @@ void MainWindow::DrawTimeline(float width, float height, float laneHeight)
     const ImU32 fineColour = ImGui::GetColorU32(ImVec4(1, 1, 1, 0.15f));
     const ImU32 textColour = ImGui::GetColorU32(theme::TextDim());
 
-    if (mTempo.valid && mTempo.bpm > 0.0f)
+    // With the grid switched off the ruler goes back to counting seconds. A song has a bar 47 and a
+    // 2:31 both; which of the two you want depends on what you are doing to it, and this is the
+    // switch between them rather than a second row showing both.
+    if (mShowGrid && mTempo.valid && mTempo.bpm > 0.0f)
     {
       // Walked beat by beat off the same map the grid lines use, so a bar number and the bar line
       // under it can never disagree - which they would the moment the two extrapolated separately.
@@ -4782,7 +4823,8 @@ void MainWindow::DrawTimeline(float width, float height, float laneHeight)
     }
     else if (duration > 0.0)
     {
-      // No grid: a time ruler, stepping through the intervals a clock actually uses.
+      // No grid, either because none was found or because it is switched off: a time ruler,
+      // stepping through the intervals a clock actually uses.
       static const double kSteps[] = {0.1, 0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 30.0, 60.0, 120.0, 300.0, 600.0};
       double step = kSteps[0];
       for (const double candidate : kSteps)
@@ -5365,6 +5407,42 @@ void MainWindow::DrawTransportBar()
     player.SetPositionSeconds(std::min(position + 5.0, duration));
   if (ImGui::IsItemHovered())
     ImGui::SetTooltip("On five seconds (Right)");
+
+  // --- what the timeline does, out at the left ---
+  //
+  // Three switches that used to live two clicks deep in a panel. They belong on the bar: each is
+  // something you reach for while looking at the waveform, and lit or unlit they say how the
+  // timeline is behaving without anything having to be opened to find out.
+  //
+  // Only where there is a timeline. On the tuner or the rig they would be three controls over
+  // something that is not on the screen.
+  if (mView == View::Player)
+  {
+    float left = barOrigin.x + 6.0f;
+
+    placeAt(left, keySize.y);
+    if (theme::TransportKey("##showgrid", theme::Icon::Grid, keySize, mShowGrid))
+      mShowGrid = !mShowGrid;
+    if (ImGui::IsItemHovered())
+      ImGui::SetTooltip(mTempo.valid ? (mShowGrid ? "Bars and beats drawn through the tracks. Click for a clock instead"
+                                                  : "The ruler is counting seconds. Click for bars and beats")
+                                     : "Find the song's tempo first, and the grid has something to draw");
+    left += keySize.x + 4.0f;
+
+    placeAt(left, keySize.y);
+    if (theme::TransportKey("##snapgrid", theme::Icon::Snap, keySize, mSnapToGrid))
+      mSnapToGrid = !mSnapToGrid;
+    if (ImGui::IsItemHovered())
+      ImGui::SetTooltip(mSnapToGrid ? "Loop edges land on the nearest beat" : "Loop edges land where you let go");
+    left += keySize.x + 4.0f;
+
+    placeAt(left, keySize.y);
+    if (theme::TransportKey("##followhead", theme::Icon::Follow, keySize, mFollowPlayhead))
+      mFollowPlayhead = !mFollowPlayhead;
+    if (ImGui::IsItemHovered())
+      ImGui::SetTooltip(mFollowPlayhead ? "The view keeps up with the playhead (F)"
+                                        : "The view stays where you put it (F)");
+  }
 
   // The click is a channel in the mixer now, at the foot of the stack, so it is muted and levelled
   // where every other part of the song is. A button out here as well would be a second switch for
@@ -5979,16 +6057,6 @@ void MainWindow::DrawProjectBar()
   ImGui::SameLine();
   ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - viewButton - 130.0f);
 
-  {
-    char marks[32];
-    std::snprintf(marks, sizeof(marks), "%s%s%s", mShowGrid ? "grid " : "", mSnapToGrid ? "snap " : "",
-                  mShowNotes ? "notes" : "");
-    ImGui::PushStyleColor(ImGuiCol_Text, theme::TextFaint());
-    ImGui::TextUnformatted(marks);
-    ImGui::PopStyleColor();
-  }
-
-  ImGui::SameLine(0, 8);
   if (theme::IconButton("##viewmenu", theme::Icon::Sliders, viewButton, theme::IconStyle::Bare))
     ImGui::OpenPopup("##viewpopup");
   if (ImGui::IsItemHovered())
@@ -6042,11 +6110,8 @@ void MainWindow::DrawProjectBar()
       mLaneHeight = std::clamp(current * 1.25f, 32.0f, 400.0f);
     }
 
-    theme::SectionLabel("SHOW");
-    theme::Check("Beat grid", &mShowGrid);
-    theme::Check("Notes and chords", &mShowNotes);
-    theme::Check("Follow the playhead", &mFollowPlayhead);
-    theme::Check("Snap loops to the beat", &mSnapToGrid);
+    // The grid, the follow and the snap are on the transport now, where they are one press away
+    // instead of two and where their state is visible without opening anything.
 
     theme::SectionLabel("KEYS");
     theme::Hint("Space play   Home start   0 stop\n"

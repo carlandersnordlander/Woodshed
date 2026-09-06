@@ -145,6 +145,10 @@ enum class Icon
   Plus,
   Minus,
   Grid,
+  /// The view keeping up with the playhead: a frame with the head inside it.
+  Follow,
+  /// Edges pulled onto the nearest beat, drawn as the two arrows point at the line between them.
+  Snap,
   Ruler,
   Eye,
   Sliders,

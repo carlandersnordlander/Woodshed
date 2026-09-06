@@ -83,6 +83,13 @@ private:
   static constexpr int kOutputSelection = -4;
   /// The panel for one of those ends.
   void DrawEndpointPanel(bool isInput);
+  /// rief When the loop key went down, and whether holding it opened the list.
+  ///
+  /// A long press has to be told from a short one somewhere, and the button itself only reports
+  /// that it was pressed. Held here so the release knows which of the two it is ending.
+  double mLoopPressAt = 0.0;
+  bool mLoopMenuFromHold = false;
+
   /// The click's channel soloed: every player track silent, the metronome alone. Not stored with
   /// the tracks, because it is not one of them and letting go of it must not have disturbed any of
   /// their own mute and solo settings.

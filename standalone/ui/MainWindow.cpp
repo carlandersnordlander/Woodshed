@@ -5410,15 +5410,128 @@ void MainWindow::DrawTransportBar()
 
   // --- what the timeline does, out at the left ---
   //
-  // Three switches that used to live two clicks deep in a panel. They belong on the bar: each is
-  // something you reach for while looking at the waveform, and lit or unlit they say how the
-  // timeline is behaving without anything having to be opened to find out.
+  // The loop, and three switches that used to live two clicks deep in a panel. They belong on the
+  // bar: each is something you reach for while looking at the waveform, and lit or unlit they say
+  // how the timeline is behaving without anything having to be opened to find out.
   //
-  // Only where there is a timeline. On the tuner or the rig they would be three controls over
+  // Only where there is a timeline. On the tuner or the rig they would be four controls over
   // something that is not on the screen.
   if (mView == View::Player)
   {
     float left = barOrigin.x + 6.0f;
+
+    // --- the loop, and the whole set of them behind it ---
+    //
+    // One key where there used to be four and a name. Pressed, it starts and stops the loop that is
+    // running; held, it opens the list and you pick from it. The arrows and the name they sat
+    // either side of were three controls for a thing most songs have two or three of, taking up the
+    // whole right-hand end of the bar to say so.
+    {
+      const int active = player.GetActiveLoop();
+      placeAt(left, keySize.y);
+      theme::TransportKey("##loop", theme::Icon::Loop, keySize, active >= 0);
+
+      const ImVec2 loopMin = ImGui::GetItemRectMin();
+      const bool loopHovered = ImGui::IsItemHovered();
+
+      // Driven from press and release rather than from the button's own click, which fires on the
+      // way down - a long press would otherwise toggle the loop before it opened the list.
+      if (ImGui::IsItemActivated())
+      {
+        mLoopPressAt = ImGui::GetTime();
+        mLoopMenuFromHold = false;
+      }
+
+      constexpr double kHoldSeconds = 0.35;
+      if (ImGui::IsItemActive() && !mLoopMenuFromHold && !loops.empty()
+          && ImGui::GetTime() - mLoopPressAt > kHoldSeconds)
+      {
+        mLoopMenuFromHold = true;
+        ImGui::OpenPopup("##looppick");
+      }
+
+      // A press that ended before the list opened is the plain toggle: off if one is running,
+      // otherwise back to the one you last touched.
+      if (ImGui::IsItemDeactivated() && !mLoopMenuFromHold)
+      {
+        if (active >= 0)
+        {
+          player.SetActiveLoop(-1);
+        }
+        else if (!loops.empty())
+        {
+          const int wanted =
+            (mSelectedLoop >= 0 && static_cast<size_t>(mSelectedLoop) < loops.size()) ? mSelectedLoop : 0;
+          player.SetActiveLoop(wanted);
+          player.SetPositionSeconds(loops[static_cast<size_t>(wanted)].startSeconds);
+        }
+      }
+
+      if (loopHovered && !ImGui::IsPopupOpen("##looppick"))
+      {
+        if (loops.empty())
+          ImGui::SetTooltip("No loops yet. Drag with the right mouse button across the ruler to make one");
+        else if (active >= 0)
+          ImGui::SetTooltip("Looping \"%s\". Click to play straight through (L), hold for the list",
+                            loops[static_cast<size_t>(active)].name.c_str());
+        else
+          ImGui::SetTooltip("Play the selected loop over and over (L), or hold for the list");
+      }
+
+      // Standing on top of the key rather than floating anywhere, and pinned: this is a list you
+      // point at, not a window you arrange.
+      ImGui::SetNextWindowPos(ImVec2(loopMin.x, loopMin.y - 6.0f), ImGuiCond_Always, ImVec2(0.0f, 1.0f));
+      ImGui::PushStyleColor(ImGuiCol_Border, theme::Line());
+      ImGui::PushStyleVar(ImGuiStyleVar_PopupBorderSize, 1.0f);
+      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+      const bool pickOpen = ImGui::BeginPopup("##looppick", ImGuiWindowFlags_NoMove
+                                                              | ImGuiWindowFlags_AlwaysAutoResize
+                                                              | ImGuiWindowFlags_NoSavedSettings);
+      ImGui::PopStyleVar(2);
+      ImGui::PopStyleColor();
+
+      if (pickOpen)
+      {
+        const int running = player.GetActiveLoop();
+        for (size_t i = 0; i < loops.size(); i++)
+        {
+          const Loop& loop = loops[i];
+          char label[128];
+          std::snprintf(label, sizeof(label), "%s##loop%zu", loop.name.c_str(), i);
+
+          if (ImGui::Selectable(label, static_cast<int>(i) == running, 0, ImVec2(190.0f, 0.0f)))
+          {
+            player.SetActiveLoop(static_cast<int>(i));
+            player.SetPositionSeconds(loop.startSeconds);
+            mSelectedLoop = static_cast<int>(i);
+            ImGui::CloseCurrentPopup();
+          }
+
+          // How long it is, out at the right: two loops with the same name are told apart by it,
+          // and it is the one number you want when choosing which passage to work.
+          char length[32];
+          std::snprintf(length, sizeof(length), "%.1f s", loop.endSeconds - loop.startSeconds);
+          ImGui::SameLine(150.0f);
+          ImGui::PushStyleColor(ImGuiCol_Text, theme::TextFaint());
+          ImGui::TextUnformatted(length);
+          ImGui::PopStyleColor();
+        }
+
+        if (running >= 0)
+        {
+          ImGui::Separator();
+          if (ImGui::Selectable("Play straight through", false, 0, ImVec2(190.0f, 0.0f)))
+          {
+            player.SetActiveLoop(-1);
+            ImGui::CloseCurrentPopup();
+          }
+        }
+
+        ImGui::EndPopup();
+      }
+
+      left += keySize.x + 14.0f;
+    }
 
     placeAt(left, keySize.y);
     if (theme::TransportKey("##showgrid", theme::Icon::Grid, keySize, mShowGrid))
@@ -5442,64 +5555,6 @@ void MainWindow::DrawTransportBar()
     if (ImGui::IsItemHovered())
       ImGui::SetTooltip(mFollowPlayhead ? "The view keeps up with the playhead (F)"
                                         : "The view stays where you put it (F)");
-  }
-
-  // The click is a channel in the mixer now, at the foot of the stack, so it is muted and levelled
-  // where every other part of the song is. A button out here as well would be a second switch for
-  // one thing, and the two would disagree the moment either was pressed.
-  float right = barOrigin.x + barWidth - 6.0f;
-
-  // Stepping between loops is the other thing this bar is for: work a passage, move to the next.
-  // It only appears once there are loops to step between - an empty set of controls for something
-  // that does not exist yet is three more things to read past.
-  if (!loops.empty())
-  {
-    const int active = player.GetActiveLoop();
-    const char* name = active >= 0 ? loops[static_cast<size_t>(active)].name.c_str() : "no loop";
-
-    right -= keySize.x + 6.0f;
-    placeAt(right, keySize.y);
-    if (theme::TransportKey("##loopnext", theme::Icon::Next, keySize))
-    {
-      const int next = (active + 1) % static_cast<int>(loops.size());
-      player.SetActiveLoop(next);
-      player.SetPositionSeconds(loops[static_cast<size_t>(next)].startSeconds);
-      mSelectedLoop = next;
-    }
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("Next loop (Shift+Right)");
-
-    // The name sits between the two arrows, right-aligned into the space it needs.
-    const float nameWidth = std::max(60.0f, ImGui::CalcTextSize(name).x + 12.0f);
-    right -= nameWidth;
-    ImGui::SetCursorScreenPos(ImVec2(right, centreY - ImGui::GetFontSize() * 0.5f));
-    ImGui::PushStyleColor(ImGuiCol_Text, active >= 0 ? theme::Accent() : theme::TextFaint());
-    ImGui::TextUnformatted(name);
-    ImGui::PopStyleColor();
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("The loop that is running. Click the arrows to step, or the ring to let it play through");
-
-    right -= keySize.x + 6.0f;
-    placeAt(right, keySize.y);
-    if (theme::TransportKey("##loopprev", theme::Icon::Previous, keySize))
-    {
-      const int next = (active <= 0) ? static_cast<int>(loops.size()) - 1 : active - 1;
-      player.SetActiveLoop(next);
-      player.SetPositionSeconds(loops[static_cast<size_t>(next)].startSeconds);
-      mSelectedLoop = next;
-    }
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip("Previous loop (Shift+Left)");
-
-    right -= keySize.x + 10.0f;
-    placeAt(right, keySize.y);
-    if (theme::TransportKey("##loopon", theme::Icon::Loop, keySize, active >= 0))
-    {
-      player.SetActiveLoop(active >= 0 ? -1 : std::max(0, mSelectedLoop));
-    }
-    if (ImGui::IsItemHovered())
-      ImGui::SetTooltip(active >= 0 ? "Playing a loop. Click to play straight through (L)"
-                                    : "Play the selected loop over and over (L)");
   }
 
   // --- the scrub bar, under the keys ---
